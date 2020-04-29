@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
+
+* {
+    box-sizing: border-box !important;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+
+    overflow: hidden !important;
+    background: f0f0f0;
+
+    font-family: 'Roboto', sans-serif;
+}
+
+.mobile-view-sim {
+    min-width: 375px;
+    max-width: 425px;
+    height: 100vh;
+    margin: 0 auto;
+    overflow: hidden !important;
+    border: 2px solid #eee;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.instagram-view-header, .instagram-feeds, .instagram-view-menu {
+    width: 100%;
+}
+
+.instagram-view-header, .instagram-view-menu {
+    height: 40px;
+    overflow: hidden !important;
+
+    font-size: 25px;
+}
+
+.instagram-view-header{
+    border-bottom: 2px solid #eee;
+}
+
+.instagram-view-menu {
+    border-top: 2px solid #eee;
+}
+
+.instagram-feeds {
+    height: calc(100% - 84px);
+    margin: 2px 0;
+    padding: 0 5px;
+    overflow-x: hidden !important;
+    overflow-y: scroll;
+
+    position: relative;
+}
+
+.error-reporting {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.instagram-view-menu {
+    display: flex;
+    flex-direction: row;
+}
+
+.footer-menu-icon {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-menu-icon a {
+    color: #666;
+}
+
+.footer-menu-icon a:hover {
+    color: rgb(2, 52, 117);
+    text-decoration: none;
+}
+
+input[type=file] {
+    width: 100px;
+    margin-top: 15px;
+}
+
+.btn {
+    font-weight: 900 !important;
+}

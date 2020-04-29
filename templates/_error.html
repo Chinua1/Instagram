@@ -1,0 +1,17 @@
+{% if params_key == 'failed' and params_value != "" %}
+    <div class="alert alert-danger d-flex justify-content-center alert-dismissible fade show" role="alert">
+        <strong>{{ params_value }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
+
+{% if params_key == 'success' and params_value != ""  %}
+    <div class="alert alert-success d-flex justify-content-center alert-dismissible fade show" role="alert">
+        <strong>{{ params_value }}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
