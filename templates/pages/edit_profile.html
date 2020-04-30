@@ -14,19 +14,19 @@
 {% endblock %}
 
 {% block feeds %}
-    <form action="/edit-profile" method="POST">
+    <form action="{{edit_user_profile_url}}" method="POST" enctype="multipart/form-data">
         <div class="form-row">
             <div class="form-group col-md-12 upload-profile-image-view">
-                <img class="profile-image-icon" src="https://www.itl.cat/pngfile/big/43-430987_cute-profile-images-pic-for-whatsapp-for-boys.jpg">
+                <img class="profile-image-icon" src="{{profile_image_url}}">
                 <div class="file-container">
-                    <input type="file">
+                    <input type="file" name="uploads">
                 </div>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="lastname"></label>
-                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last Name">
+                <input type="text" value="{{lastname}}" class="form-control" id="lastname" name="lastname" placeholder="Last Name">
                 {% if has_params %}
                     {% if lastname == "" %}
                         <small class="text-danger">*** Lastname is required</small>
@@ -37,7 +37,7 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="firstname"></label>
-                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name">
+                <input type="text" value="{{firstname}}" class="form-control" id="firstname" name="firstname" placeholder="First Name">
                 {% if has_params %}
                     {% if firstname == "" %}
                         <small class="text-danger">*** Firstname is required</small>
@@ -48,7 +48,7 @@
         <div class="form-row">
             <div class="form-group col-md-12">
                 <label for="username"></label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                <input type="text" value="{{username}}" class="form-control" id="username" name="username" placeholder="Username">
                 {% if has_params %}
                     {% if username == "" %}
                         <small class="text-danger">*** Username is required</small>
