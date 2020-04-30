@@ -21,36 +21,16 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape = True
 )
 
-class LoggedUserProfilePage( webapp2.RequestHandler ):
-    def get( self ):
+class SelectedUserProfilePage( webapp2.RequestHandler ):
+    def get( self, user_key ):
         url = ''
-        logged_user = None
+        selected_user = self.getSelectedUser(user_key)
         user = users.get_current_user()
-        firstname = ''
-        lastname = ''
-        username = ''
+        logged_user_key = ndb.Key( 'User', user.user_id() )
+        logged_user = logged_user_key.get()
 
         if user:
             url = users.create_logout_url( self.request.uri )
-
-            logged_user_key = ndb.Key( 'User', user.user_id() )
-            logged_user = logged_user_key.get()
-
-            if logged_user == None:
-                logged_user = User( id = user.user_id() )
-                logged_user.put()
-                temp_url = "/edit-profile"
-                self.redirect(temp_url)
-                return
-            else:
-                if logged_user.firstname:
-                    lastname = str(logged_user.lastname).capitalize()
-                    firstname = str(logged_user.firstname).capitalize()
-                    username = str(logged_user.username).lower()
-                else:
-                    temp_url = "/edit-profile"
-                    self.redirect(temp_url)
-                    return
         else:
             url = users.create_login_url( self.request.uri )
             self.redirect( url )
@@ -59,23 +39,24 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
         collection_key = ndb.Key( 'BlobCollection', 1 )
         collection = collection_key.get()
 
-        posts = self.getLoggedUserPosts( reversed(logged_user.posts), collection, images )
+        posts = self.getLoggedUserPosts( reversed(selected_user.posts), collection, images )
 
         template_values = {
             "url": url,
             "logged_user": logged_user,
+            "selected_user": selected_user,
+            "profile_image_url": self.getProfileImage( selected_user.profile_image, collection, images ),
+            "post_owner_key": user_key,
             "user": user,
-            "profile_image_url": self.getProfileImage( logged_user.profile_image, collection, images ),
-            "post_owner_key": None,
-            "firstname": firstname,
-            "lastname": lastname,
-            "username": username,
-            "fullname": self.getFullName(lastname, firstname),
+            "firstname": str(selected_user.firstname).capitalize(),
+            "lastname": str(selected_user.lastname).capitalize(),
+            "username": str(selected_user.username).lower(),
+            "fullname": str(self.getFullName(selected_user.lastname, selected_user.firstname)).capitalize(),
             "posts": posts,
-            "post_count": len(logged_user.posts),
-            "followers": len(logged_user.following),
-            "following": len(logged_user.followers),
-
+            "post_count": len(selected_user.posts),
+            "followers": len(selected_user.following),
+            "following": len(selected_user.followers),
+            "is_followed": self.getFollowShipStatus(selected_user.following, str(logged_user.key.id()))
         }
         template = JINJA_ENVIRONMENT.get_template( 'pages/profile.html' )
         self.response.write( template.render( template_values ) )
@@ -104,3 +85,18 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
 
     def getFullName( self, firstname, lastname):
         return lastname + " " + firstname
+
+    def getFollowShipStatus( self, following, logged_user_key):
+        is_followed = False
+        for key in following:
+            if key == logged_user_key:
+                is_followed = True
+        return is_followed
+
+    def getSelectedUser(self, user_key):
+        user = None
+        for user_in_datastore in User.query().fetch():
+            if user_key == str(user_in_datastore.key.id()):
+                user = user_in_datastore
+
+        return user

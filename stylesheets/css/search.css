@@ -1,0 +1,69 @@
+.search-control {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+#insta_search {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 0 5px;
+    font-size: 18px;
+}
+
+.search-result-view {
+    width: 100%;
+}
+
+.no-account-found {
+    width: 100%;
+    height: 200px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #888;
+}
+
+.icofont-search-user {
+    padding: 0 10px;
+}
+
+ul.account-list {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.account-list li {
+    width: 100%;
+    padding: 10px 20px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+ul.account-list li:first-child {
+    border-top: none;
+}
+
+ul.account-list li:last-child {
+    border-bottom: none;
+}
+
+ul.account-list li a {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    color: #000
+}
+
+ul.account-list li a:hover {
+    text-decoration: none;
+}

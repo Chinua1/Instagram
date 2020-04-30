@@ -14,5 +14,44 @@
 {% endblock %}
 
 {% block feeds %}
-
+    <div class="profile-detail-container">
+        <ul class="profile-summary">
+            <li>
+                <span><img src="{{profile_image_url}}"></span>
+                <span class="logged-username">{{fullname}}</span>
+            </li>
+            <li>
+                <span>{{post_count}}</span><span>{% if post_count > 1%} Posts {% else %} Post {% endif %}</span>
+            </li>
+            <li>
+                <span>{{followers}}</span><span>{% if followers > 1%} Followers {% else %} Followers {% endif %}</span>
+            </li>
+            <li>
+                <span>{{following}}</span><span>Following</span>
+            </li>
+        </ul>
+        <div class="edit-button-container">
+            {% if post_owner_key %}
+                <a href="#">{% if is_followed %} Unfollow {% else %} Follow {% endif %}</a>
+            {% else %}
+                <a href="/edit-profile"> Edit Profile</a> <br>
+            {% endif %}
+        </div>
+        <div class="profile-timelime">
+            <div class="title-timeline">
+                <strong>Timeline</strong>
+            </div>
+            {% if post_count <= 0 %}
+                <div class="empty-post-text">
+                    <strong>No Post</strong>
+                </div>
+            {% else %}
+                {% for post in posts %}
+                    <a class="timeline-item" href="#">
+                        <img title="{{post.post.post_caption}}" src="{{post.image_url}}">
+                    </a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

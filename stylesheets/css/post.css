@@ -29,6 +29,12 @@
     justify-content: center;
 }
 
+.file-container .file{
+    margin-top: 150px;
+}
+
+
+
 .caption-container {
     width: 100%;
     height: 60px;

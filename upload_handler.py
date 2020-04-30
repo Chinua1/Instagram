@@ -40,7 +40,7 @@ class UploadHandler( blobstore_handlers.BlobstoreUploadHandler ):
                         new_post = Post(
                             image_label = post_image_name,
                             post_caption = post_caption,
-                            created_at = datetime.now()
+                            created_at = str(datetime.now())
                         )
 
                         logged_user.posts.append(new_post)
@@ -49,13 +49,13 @@ class UploadHandler( blobstore_handlers.BlobstoreUploadHandler ):
                         self.redirect(url)
                         return
                     else:
-                        message = "Invalid input. Please add a caption."
+                        message = "Invalid input. Please enter post caption."
                         query_string = "?failed=" + message
                         url = "/create-post" + query_string
                         self.redirect(url)
                         return
                 else:
-                    message = "Invalid file type. Only JPG or PNG are permitted file type"
+                    message = "Invalid file type. JPG or PNG are the permitted file type"
                     query_string = "?failed=" + message
                     url = "/create-post" + query_string
                     self.redirect(url)
@@ -64,5 +64,50 @@ class UploadHandler( blobstore_handlers.BlobstoreUploadHandler ):
                 message = "No image selected. Please select an image file."
                 query_string = "?failed=" + message
                 url = "/create-post" + query_string
+                self.redirect(url)
+                return
+        if action == "Save Profile":
+            if len(self.get_uploads()) >= 1:
+                uploads = self.get_uploads()[ 0 ]
+                blobinfo = blobstore.BlobInfo( uploads.key() )
+                extension = blobinfo.filename.split(".")[1]
+                if str(extension).lower() == "jpg" or str(extension).lower() == "png":
+                    post_image_name = "instagram" + str(time.mktime(datetime.now().timetuple())) + "." + extension
+                    lastname = self.request.get('lastname')
+                    firstname = self.request.get('firstname')
+                    username = self.request.get('username')
+
+                    if lastname == '' or firstname == '' or username == '':
+                        message = 'No input field should be empty'
+                        query_string = '?failed=' + message + '&lastname=' + lastname + '&firstname=' + firstname + '&username=' + username
+                        url = '/edit-profile' + query_string
+                        self.redirect( url)
+                        return
+                    else:
+                        collection_key = ndb.Key( 'BlobCollection', 1 )
+                        collection = collection_key.get()
+                        collection.filenames.append( post_image_name )
+                        collection.blobs.append( uploads.key() )
+                        collection.put()
+
+                        logged_user.lastname = lastname
+                        logged_user.firstname = firstname
+                        logged_user.username = username
+                        logged_user.email = user.email()
+                        logged_user.profile_image = post_image_name
+                        logged_user.put()
+                        url = '/profile'
+                        self.redirect( url)
+                        return
+                else:
+                    message = "Invalid file type. JPG or PNG are the permitted file type"
+                    query_string = "?failed=" + message
+                    url = "/edit-profile" + query_string
+                    self.redirect(url)
+                    return
+            else:
+                message = "No image selected. Please select an image file."
+                query_string = "?failed=" + message
+                url = "/edit-profile" + query_string
                 self.redirect(url)
                 return

@@ -5,8 +5,11 @@ import datetime
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.ext import blobstore
+from google.appengine.api import images
 
 from user import User
+from blob_collection import BlobCollection
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -32,7 +35,7 @@ class LoggedUserProfileEditPage( webapp2.RequestHandler ):
         params_value = ''
 
         try:
-            if 'lastname' in self.request.GET or 'firstname' in self.request.GET or 'username' in self.request.GET:
+            if 'failed' in self.request.GET or 'lastname' in self.request.GET or 'firstname' in self.request.GET or 'username' in self.request.GET:
                 has_params = True
                 params_key = 'failed'
                 firstname = self.request.params.get('firstname')
@@ -47,48 +50,49 @@ class LoggedUserProfileEditPage( webapp2.RequestHandler ):
             logged_user_key = ndb.Key( 'User', user.user_id() )
             logged_user = logged_user_key.get()
 
-
+            if logged_user:
+                if logged_user.firstname:
+                    lastname = str(logged_user.lastname).capitalize()
+                    firstname = str(logged_user.firstname).capitalize()
+                    username = str(logged_user.username).lower()
         else:
             url = users.create_login_url( self.request.uri )
             self.redirect( url )
             return
 
+        collection_key = ndb.Key( 'BlobCollection', 1 )
+        collection = collection_key.get()
+
+
+        if collection == None:
+            collection = BlobCollection( id = 1)
+            collection.put()
+
         template_values = {
             "url": url,
             "logged_user": logged_user,
+            "profile_image_url": self.getProfileImage( logged_user, collection, images ),
             "user": user,
             "firstname": firstname,
             "lastname": lastname,
             "username": username,
             "has_params": has_params,
             "params_key": params_key,
-            "params_value": params_value
+            "params_value": params_value,
+            "edit_user_profile_url": blobstore.create_upload_url( '/upload-request-handler' ),
         }
         template = JINJA_ENVIRONMENT.get_template( 'pages/edit_profile.html' )
         self.response.write( template.render( template_values ) )
         return
 
-    def post( self ):
-        self.response.headers[ 'Content-Type' ] = 'text/html'
-        user = users.get_current_user()
-        logged_user_key = ndb.Key( 'User', user.user_id() )
-        logged_user = logged_user_key.get()
-        lastname = self.request.get('lastname')
-        firstname = self.request.get('firstname')
-        username = self.request.get('username')
+    def getProfileImage( self, logged_user, collection, images ):
+        if not logged_user:
+            return "https://image.flaticon.com/icons/png/512/23/23228.png"
 
-        if lastname == '' or firstname == '' or username == '':
-            message = 'Please fill out all fields'
-            query_string = '?failed=' + message + '&lastname=' + lastname + '&firstname=' + firstname + '&username=' + username
-            url = '/edit-profile' + query_string
-            self.redirect( url)
-            return
-        else:
-            logged_user.lastname = lastname
-            logged_user.firstname = firstname
-            logged_user.username = username
-            logged_user.email = user.email()
-            logged_user.put()
-            url = '/profile'
-            self.redirect( url)
-            return
+        image_name = logged_user.profile_image
+        try:
+            index = collection.filenames.index(image_name)
+            blob_key = collection.blobs[index]
+            return images.get_serving_url(blob_key, secure_url=False)
+        except:
+            return "https://image.flaticon.com/icons/png/512/23/23228.png"

@@ -13,6 +13,9 @@ from user_profile import LoggedUserProfilePage
 from user_profile_edit import LoggedUserProfileEditPage
 from create_post import CreatePost
 from upload_handler import UploadHandler
+from selected_user_profile import SelectedUserProfilePage
+from search_user import SearchPage
+from api_request import APIServices
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -49,9 +52,9 @@ class TimelinePage( webapp2.RequestHandler ):
                 return
             else:
                 if logged_user.firstname:
-                    lastname = logged_user.lastname
-                    firstname = logged_user.firstname
-                    username = logged_user.username
+                    lastname = str(logged_user.lastname).capitalize()
+                    firstname = str(logged_user.firstname).capitalize()
+                    username = str(logged_user.username).lower()
                 else:
                     temp_url = "/edit-profile"
                     self.redirect(temp_url)
@@ -79,9 +82,12 @@ class TimelinePage( webapp2.RequestHandler ):
 
 app = webapp2.WSGIApplication(
     [
+        webapp2.Route( r'/api-request-resources', handler=APIServices, name='api-request-resources'),
+        webapp2.Route( r'/search', handler=SearchPage, name='search-request-handler'),
         webapp2.Route( r'/upload-request-handler', handler=UploadHandler, name='upload-request-handler'),
         webapp2.Route( r'/create-post', handler=CreatePost, name='create-post'),
         webapp2.Route( r'/edit-profile', handler=LoggedUserProfileEditPage, name='edit-user-profile'),
+        webapp2.Route( r'/<user_key:[^/]+>/profile', handler=SelectedUserProfilePage, name='selected-user-profile'),
         webapp2.Route( r'/profile', handler=LoggedUserProfilePage, name='user-profile'),
         webapp2.Route( r'/timeline', handler=TimelinePage, name='timeline'),
         webapp2.Route( r'/', handler=RedirectToTimelinePage, name='redirect-to-timeline'),

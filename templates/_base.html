@@ -30,19 +30,101 @@
                 <div class="footer-menu-icon">
                     <a href="/timeline"><i class="icofont-home"></i></a>
                 </div>
-               <div class="footer-menu-icon">
+                <div class="footer-menu-icon">
                     <a href="/create-post"><i class="icofont-plus"></i></a>
                 </div>
-            <!--    <div class="footer-menu-icon">
-                    <a href="#"><i class="icofont-search-1"></i></a>
+                <div class="footer-menu-icon">
+                    <a href="/search"><i class="icofont-search-1"></i></a>
                 </div>
                 <div class="footer-menu-icon">
                     <a href="/profile"><i class="icofont-user-alt-3"></i></a>
-                </div>  -->
+                </div>
+                <input type="hidden" value="{% if logged_user %} {{logged_user.key.id()}} {% endif %}" id="logged_user_key" name="logged_user_key">
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(()=>{
+
+                const logged_user_key = document.getElementById("logged_user_key").value;
+
+                if(document.getElementById("insta_search")) {
+                    populateSearchResultArea(document.getElementById("insta_search").value);
+                }
+
+                $("#insta_search").on("input", ()=>{
+                    populateSearchResultArea($("#insta_search").val());
+                });
+
+                function populateSearchResultArea(searchString) {
+                    let url = '/api-request-resources';
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        contentType: 'application/json',
+                        data: {search_param: searchString},
+                        dataType: 'json',
+                        success: function(data){
+                            if ( data ) {
+                                console.log(data);
+                                if (searchString) {
+                                    data = filterData( data, searchString);
+                                }
+                                document.getElementById("search-result-view").innerHTML = updateSearchResultView(data);
+                            }
+                        },
+                        error: function(data, textStatus, errorThrown) {
+                            console.log(data);
+                        }
+                    });
+                }
+
+                function filterData( data, searchString) {
+                    const dataList = [];
+                    for(let i=0; i<data.length; i++) {
+                        if (data[i].username.includes(searchString)) {
+                            dataList.push(data[i]);
+                        }
+                    }
+                    return dataList;
+                }
+
+                function updateSearchResultView(data) {
+                    let innerContent = "";
+                    if (data.length <= 0) {
+                        innerContent = `<div class="no-account-found">
+                            <span>
+                                <stron>No Account found</strong>
+                            </span>
+                        </div>`;
+                    } else {
+                        innerContent = getUserListHtml(data);
+                    }
+                    return innerContent;
+                }
+
+                function getUserListHtml(data) {
+                    let openTag = '<ul class="account-list">';
+                    let closeTag = '</ul>';
+                    let contentTag = "";
+                    for (let i=0; i<data.length; i++) {
+                        if (data[i].id != logged_user_key) {
+                            console.log(data[i].id);
+                            contentTag += `<li>
+                                                <a href="${'/' + data[i].id + '/profile'}">
+                                                    <strong>${data[i].username}</strong>
+                                                </a>
+                                            </li>`;
+                        }
+                    }
+
+                    return `${openTag}${contentTag}${closeTag}`;
+                }
+            });
+        </script>
     </body>
 </html>

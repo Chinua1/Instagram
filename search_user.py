@@ -2,12 +2,11 @@ import webapp2
 import jinja2
 import os
 import datetime
+import json
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.ext import blobstore
-from google.appengine.api import images
-
 
 from user import User
 from blob_collection import BlobCollection
@@ -22,7 +21,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape = True
 )
 
-class CreatePost( webapp2.RequestHandler ):
+class SearchPage( webapp2.RequestHandler ):
     def get( self ):
         url = ''
         logged_user = None
@@ -78,24 +77,15 @@ class CreatePost( webapp2.RequestHandler ):
         template_values = {
             "url": url,
             "logged_user": logged_user,
-            "profile_image_url": self.getProfileImage( logged_user.profile_image, collection, images ),
             "user": user,
             "firstname": firstname,
             "lastname": lastname,
             "username": username,
-            "create_post_url": blobstore.create_upload_url( '/upload-request-handler' ),
             'has_params': has_params,
             'params_key': params_key,
-            'params_value': params_value
+            'params_value': params_value,
+            'user_json': json.dumps( [ dict(user.to_dict(), **dict(id=user.key.id())) for user in  User.query().fetch() ] )
         }
-        template = JINJA_ENVIRONMENT.get_template( 'pages/create_post.html' )
+        template = JINJA_ENVIRONMENT.get_template( 'pages/search.html' )
         self.response.write( template.render( template_values ) )
         return
-
-    def getProfileImage( self, image_name, collection, images ):
-        try:
-            index = collection.filenames.index(image_name)
-            blob_key = collection.blobs[index]
-            return images.get_serving_url(blob_key, secure_url=False)
-        except:
-            return "https://image.flaticon.com/icons/png/512/23/23228.png"
