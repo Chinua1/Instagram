@@ -29,6 +29,8 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
         firstname = ''
         lastname = ''
         username = ''
+        collection_key = ndb.Key( 'BlobCollection', 1 )
+        collection = collection_key.get()
 
         if user:
             url = users.create_logout_url( self.request.uri )
@@ -56,10 +58,7 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
             self.redirect( url )
             return
 
-        collection_key = ndb.Key( 'BlobCollection', 1 )
-        collection = collection_key.get()
-
-        posts = self.getLoggedUserPosts( reversed(logged_user.posts), collection, images )
+        posts = self.getLoggedUserPosts( self.sortPosts(logged_user.posts), collection, images )
 
         template_values = {
             "url": url,
@@ -91,6 +90,7 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
 
     def getLoggedUserPosts( self, posts, collection, images ):
         generated_posts = []
+        posts = self.getAllPostForLoggedUser(posts)
         for post in posts:
             index = collection.filenames.index(post.image_label)
             blob_key = collection.blobs[index]
@@ -102,5 +102,25 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
 
         return generated_posts
 
+    def getAllPostForLoggedUser(self, posts):
+        post_list = []
+        if len(posts)<= 0:
+            return posts
+        else:
+            for post_id in posts:
+                post = ndb.Key( 'Post', int(post_id) ).get()
+                post_list.append(post)
+        return post_list
+
     def getFullName( self, firstname, lastname):
         return lastname + " " + firstname
+
+    def sortPosts(self, posts):
+        for i in range(1, len(posts)):
+            j = i-1
+            nxt_element = posts[i]
+            while (posts[j].created_at < nxt_element.created_at) and (j >= 0):
+                posts[j+1] = posts[j]
+                j=j-1
+            posts[j+1] = nxt_element
+        return posts

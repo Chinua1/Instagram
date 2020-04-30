@@ -24,7 +24,7 @@
                 <span>{{post_count}}</span><span>{% if post_count > 1%} Posts {% else %} Post {% endif %}</span>
             </li>
             <li>
-                <span>{{followers}}</span><span>{% if followers > 1%} Followers {% else %} Followers {% endif %}</span>
+                <span>{{followers}}</span><span>{% if followers > 1%} Followers {% else %} Follower {% endif %}</span>
             </li>
             <li>
                 <span>{{following}}</span><span>Following</span>
@@ -32,9 +32,11 @@
         </ul>
         <div class="edit-button-container">
             {% if post_owner_key %}
-                <a href="#">{% if is_followed %} Unfollow {% else %} Follow {% endif %}</a>
+                <form action="/{{post_owner_key}}/update-follow-status" method="post">
+                    <input type="submit" value="{% if is_followed %} Unfollow {% else %} Follow {% endif %}">
+                </form>
             {% else %}
-                <a href="/edit-profile"> Edit Profile</a> <br>
+                <a href="/edit-profile"> Edit Profile</a>
             {% endif %}
         </div>
         <div class="profile-timelime">
@@ -43,7 +45,7 @@
             </div>
             {% if post_count <= 0 %}
                 <div class="empty-post-text">
-                    <strong>No Post</strong>
+                    <strong>No Posts</strong>
                 </div>
             {% else %}
                 {% for post in posts %}

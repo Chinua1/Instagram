@@ -14,5 +14,41 @@
 {% endblock %}
 
 {% block feeds %}
-
+    <ul class="feeds-list">
+        {% for post in posts %}
+            <li class="feed-item">
+                <div class="item-block">
+                    <div class="accounts-details">
+                        <img src="{{profile_image}}">
+                        <span><strong>{{post.created_by.username}}</strong></span>
+                    </div>
+                    <div class="post-image">
+                        <img src="{{post.image_url}}">
+                    </div>
+                    <div class="post-details">
+                        <div class="post-texts">
+                            <div class="likes" style="font-size: 10px;">
+                                <!-- <strong>2 likes</strong> -->
+                            </div>
+                            <div class="index-post-caption text-truncate" style="font-size: 12px;">
+                                <span><strong>{{post.created_by.username}}</strong></span>&nbsp; {{post.post.post_caption}}
+                            </div>
+                            <div class="comments">
+                                <div class="duration" style="font-size: 10px; color: #999;">
+                                    <strong>View all 120 comments</strong>
+                                    <div class="comment-form">
+                                        <img class="comment-profile-img" src="{{profile_image}}">
+                                        <input type="text" placeholder="Add a comment...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="duration" style="font-size: 10px; color: #999;">
+                                1 hour ago
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

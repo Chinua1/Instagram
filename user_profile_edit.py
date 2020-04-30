@@ -45,8 +45,13 @@ class LoggedUserProfileEditPage( webapp2.RequestHandler ):
         except:
             pass
 
-        if user:
+        if not user:
+            url = users.create_login_url( self.request.uri )
+            self.redirect( url )
+            return
+        else:
             url = users.create_logout_url( self.request.uri )
+
             logged_user_key = ndb.Key( 'User', user.user_id() )
             logged_user = logged_user_key.get()
 
@@ -55,14 +60,9 @@ class LoggedUserProfileEditPage( webapp2.RequestHandler ):
                     lastname = str(logged_user.lastname).capitalize()
                     firstname = str(logged_user.firstname).capitalize()
                     username = str(logged_user.username).lower()
-        else:
-            url = users.create_login_url( self.request.uri )
-            self.redirect( url )
-            return
 
         collection_key = ndb.Key( 'BlobCollection', 1 )
         collection = collection_key.get()
-
 
         if collection == None:
             collection = BlobCollection( id = 1)

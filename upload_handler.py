@@ -40,22 +40,25 @@ class UploadHandler( blobstore_handlers.BlobstoreUploadHandler ):
                         new_post = Post(
                             image_label = post_image_name,
                             post_caption = post_caption,
-                            created_at = str(datetime.now())
+                            created_at = datetime.now(),
+                            created_by = str(logged_user.key.id())
                         )
 
-                        logged_user.posts.append(new_post)
+                        k=new_post.put()
+
+                        logged_user.posts.append(str(k.get().key.id()))
                         logged_user.put()
                         url = "/timeline"
                         self.redirect(url)
                         return
                     else:
-                        message = "Invalid input. Please enter post caption."
+                        message = "Invalid input. Please add a caption."
                         query_string = "?failed=" + message
                         url = "/create-post" + query_string
                         self.redirect(url)
                         return
                 else:
-                    message = "Invalid file type. JPG or PNG are the permitted file type"
+                    message = "Invalid file type. Only JPG or PNG are permitted file type"
                     query_string = "?failed=" + message
                     url = "/create-post" + query_string
                     self.redirect(url)
@@ -100,7 +103,7 @@ class UploadHandler( blobstore_handlers.BlobstoreUploadHandler ):
                         self.redirect( url)
                         return
                 else:
-                    message = "Invalid file type. JPG or PNG are the permitted file type"
+                    message = "Invalid file type. Only JPG or PNG are permitted file type"
                     query_string = "?failed=" + message
                     url = "/edit-profile" + query_string
                     self.redirect(url)

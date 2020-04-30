@@ -26,20 +26,34 @@ class SelectedUserProfilePage( webapp2.RequestHandler ):
         url = ''
         selected_user = self.getSelectedUser(user_key)
         user = users.get_current_user()
-        logged_user_key = ndb.Key( 'User', user.user_id() )
-        logged_user = logged_user_key.get()
+        collection_key = ndb.Key( 'BlobCollection', 1 )
+        collection = collection_key.get()
 
         if user:
             url = users.create_logout_url( self.request.uri )
+
+            logged_user_key = ndb.Key( 'User', user.user_id() )
+            logged_user = logged_user_key.get()
+
+            if logged_user == None:
+                logged_user = User( id = user.user_id() )
+                logged_user.put()
+                temp_url = "/edit-profile"
+                self.redirect(temp_url)
+                return
+            else:
+                if logged_user.firstname:
+                    pass
+                else:
+                    temp_url = "/edit-profile"
+                    self.redirect(temp_url)
+                    return
         else:
             url = users.create_login_url( self.request.uri )
             self.redirect( url )
             return
 
-        collection_key = ndb.Key( 'BlobCollection', 1 )
-        collection = collection_key.get()
-
-        posts = self.getLoggedUserPosts( reversed(selected_user.posts), collection, images )
+        posts = self.getLoggedUserPosts( self.sortPosts(logged_user.posts), collection, images )
 
         template_values = {
             "url": url,
@@ -56,7 +70,7 @@ class SelectedUserProfilePage( webapp2.RequestHandler ):
             "post_count": len(selected_user.posts),
             "followers": len(selected_user.following),
             "following": len(selected_user.followers),
-            "is_followed": self.getFollowShipStatus(selected_user.following, str(logged_user.key.id()))
+            "is_followed": self.getFollowShipStatus(logged_user.following, str(selected_user.key.id()))
         }
         template = JINJA_ENVIRONMENT.get_template( 'pages/profile.html' )
         self.response.write( template.render( template_values ) )
@@ -72,7 +86,7 @@ class SelectedUserProfilePage( webapp2.RequestHandler ):
 
     def getLoggedUserPosts( self, posts, collection, images ):
         generated_posts = []
-        for post in posts:
+        for post in self.getAllPostForLoggedUser(posts):
             index = collection.filenames.index(post.image_label)
             blob_key = collection.blobs[index]
             images_url = images.get_serving_url(blob_key, secure_url=False)
@@ -82,6 +96,16 @@ class SelectedUserProfilePage( webapp2.RequestHandler ):
             generated_posts.append(temp)
 
         return generated_posts
+
+    def getAllPostForLoggedUser(self, posts):
+        post_list = []
+        if len(posts)<= 0:
+            return posts
+        else:
+            for post_id in posts:
+                post = ndb.Key( 'Post', int(post_id) ).get()
+                post_list.append(post)
+        return post_list
 
     def getFullName( self, firstname, lastname):
         return lastname + " " + firstname
@@ -100,3 +124,13 @@ class SelectedUserProfilePage( webapp2.RequestHandler ):
                 user = user_in_datastore
 
         return user
+
+    def sortPosts(self, posts):
+        for i in range(1, len(posts)):
+            j = i-1
+            nxt_element = posts[i]
+            while (posts[j].created_at < nxt_element.created_at) and (j >= 0):
+                posts[j+1] = posts[j]
+                j=j-1
+            posts[j+1] = nxt_element
+        return posts
