@@ -1,0 +1,37 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Instagram - Profile</title>
+{% endblock %}
+
+{% block header %}
+
+    <div class="header-label">
+        <strong>Create Post</strong>
+    </div>
+    <div class="paper-kite">
+        <a href="{{url}}"><i class="icofont-logout"></i></a>
+    </div>
+{% endblock %}
+
+{% block feeds %}
+    <div class="new-post-container">
+        <img class="new-post-image" src="https://www.itl.cat/pngfile/big/43-430987_cute-profile-images-pic-for-whatsapp-for-boys.jpg">
+        <form action="{{ create_post_url }}" method="POST" enctype="multipart/form-data">
+            <div class="caption-container">
+                <div class="icons">
+                    <img class="active-profile-icon" src="https://www.itl.cat/pngfile/big/43-430987_cute-profile-images-pic-for-whatsapp-for-boys.jpg">
+                </div>
+                <div class="post-caption">
+                    <input type="text" name="post_caption" placeholder="Add a caption to post...">
+                </div>
+                <div class="icons">
+                    <input type="submit" value="Post" name="button" class="text-white bg-info">
+                </div>
+            </div>
+            <div class="file-container">
+                <input type="file" name="uploads">
+            </div>
+        </form>
+    </div>
+{% endblock %}
