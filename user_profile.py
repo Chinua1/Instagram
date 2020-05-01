@@ -72,8 +72,9 @@ class LoggedUserProfilePage( webapp2.RequestHandler ):
             "fullname": self.getFullName(lastname, firstname),
             "posts": posts,
             "post_count": len(logged_user.posts),
-            "followers": len(logged_user.following),
-            "following": len(logged_user.followers),
+            "followers": len(logged_user.followers),
+            "following": len(logged_user.following),
+            "following_followers_id": logged_user.key.id()
 
         }
         template = JINJA_ENVIRONMENT.get_template( 'pages/profile.html' )

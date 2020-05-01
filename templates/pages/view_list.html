@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Instagram - Profile</title>
+{% endblock %}
+
+{% block header %}
+    <div class="header-label">
+        <strong>{{username}}</strong> &nbsp;&nbsp;&bull;&nbsp;&nbsp;<strong style="font-size: 12px; height: 100%; display: flex; align-items: center; padding-top: 3px;">{{following_followers}}</strong>
+    </div>
+    <div class="paper-kite">
+        <a href="{{url}}"><i class="icofont-logout"></i></a>
+    </div>
+{% endblock %}
+
+{% block feeds %}
+    {% if view_user_list|length <= 0 %}
+        <div class="no-account-found">
+            <span>
+                <stron>{{following_followers}} list is empty.</strong>
+            </span>
+        </div>
+    {% else %}
+        <ul class="account-list">
+            {% for user in view_user_list %}
+                <li>
+                    {% if logged_user.key.id() == user.key.id() %}
+                        <a href="/profile">
+                            <strong>{{ user.username}}</strong>
+                        </a>
+                    {% else %}
+                        <a href="/{{user.key.id()}}/profile">
+                            <strong>{{ user.username }}</strong>
+                        </a>
+                    {% endif %}
+                </li>
+            {% endfor%}
+        </ul>
+    {% endif %}
+{% endblock %}

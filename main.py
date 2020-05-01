@@ -20,6 +20,7 @@ from selected_user_profile import SelectedUserProfilePage
 from search_user import SearchPage
 from api_request import APIServices
 from update_follow import UpdateFollowStatus
+from view_list import ViewFollowingFollowersList
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -157,6 +158,7 @@ class TimelinePage( webapp2.RequestHandler ):
 
 app = webapp2.WSGIApplication(
     [
+        webapp2.Route( r'/view-list/<user_key:[^/]+>/<following_followers:[^/]+>', handler=ViewFollowingFollowersList, name='view-follow-list'),
         webapp2.Route( r'/<user_key:[^/]+>/update-follow-status', handler=UpdateFollowStatus, name='update-follow-status'),
         webapp2.Route( r'/api-request-resources', handler=APIServices, name='api-request-resources'),
         webapp2.Route( r'/search', handler=SearchPage, name='search-request-handler'),

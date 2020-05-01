@@ -43,6 +43,18 @@
 
 .profile-summary li {
     width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center
+}
+
+.profile-summary li a{
+    display: inline-block;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 
     display: flex;
@@ -51,6 +63,11 @@
     justify-content: center;
 
     font-weight: 900;
+    color: #000;
+}
+
+.profile-summary li a:hover{
+    text-decoration: none;
 }
 
 .profile-summary li span img {

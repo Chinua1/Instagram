@@ -21,13 +21,19 @@
                 <span class="logged-username">{{fullname}}</span>
             </li>
             <li>
-                <span>{{post_count}}</span><span>{% if post_count > 1%} Posts {% else %} Post {% endif %}</span>
+                <a href="#">
+                    <span>{{post_count}}</span><span>{% if post_count > 1%} Posts {% else %} Post {% endif %}</span>
+                </a>
             </li>
             <li>
-                <span>{{followers}}</span><span>{% if followers > 1%} Followers {% else %} Follower {% endif %}</span>
+                <a href="/view-list/{{following_followers_id}}/followers">
+                    <span>{{followers}}</span><span>{% if followers > 1%} Followers {% else %} Follower {% endif %}</span>
+                </a>
             </li>
             <li>
-                <span>{{following}}</span><span>Following</span>
+                <a href="/view-list/{{following_followers_id}}/following">
+                    <span>{{following}}</span><span>Following</span>
+                </a>
             </li>
         </ul>
         <div class="edit-button-container">

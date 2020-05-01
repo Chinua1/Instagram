@@ -68,9 +68,10 @@ class SelectedUserProfilePage( webapp2.RequestHandler ):
             "fullname": str(self.getFullName(selected_user.lastname, selected_user.firstname)).capitalize(),
             "posts": posts,
             "post_count": len(selected_user.posts),
-            "followers": len(selected_user.following),
-            "following": len(selected_user.followers),
-            "is_followed": self.getFollowShipStatus(logged_user.following, str(selected_user.key.id()))
+            "followers": len(selected_user.followers),
+            "following": len(selected_user.following),
+            "is_followed": self.getFollowShipStatus(logged_user.following, user_key),
+            "following_followers_id": selected_user.key.id()
         }
         template = JINJA_ENVIRONMENT.get_template( 'pages/profile.html' )
         self.response.write( template.render( template_values ) )
