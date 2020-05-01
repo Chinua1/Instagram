@@ -21,6 +21,7 @@ from search_user import SearchPage
 from api_request import APIServices
 from update_follow import UpdateFollowStatus
 from view_list import ViewFollowingFollowersList
+from comment_on_post import AddCommentToPost
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -78,6 +79,13 @@ class TimelinePage( webapp2.RequestHandler ):
 
         posts = self.getTimelinePost(logged_user, collection, images, 50)
 
+        if len(posts) <= 0:
+            message = "You currently do not have any posts. Create one ..."
+            query_string = "?failed=" + message
+            url = "create-post" + query_string
+            self.redirect( url )
+            return
+
         template_values = {
             "url": url,
             "logged_user": logged_user,
@@ -86,7 +94,8 @@ class TimelinePage( webapp2.RequestHandler ):
             "lastname": lastname,
             "username": username,
             "profile_image": self.getProfileImage( logged_user.profile_image, collection, images ),
-            "posts": posts
+            "posts": posts,
+            "sortPosts": self.sortPosts
         }
 
         template = JINJA_ENVIRONMENT.get_template( 'pages/index.html' )
@@ -158,6 +167,7 @@ class TimelinePage( webapp2.RequestHandler ):
 
 app = webapp2.WSGIApplication(
     [
+        webapp2.Route( r'/post/<post_key:[^/]+>/add-comment', handler=AddCommentToPost, name='add-comment-tro-post'),
         webapp2.Route( r'/view-list/<user_key:[^/]+>/<following_followers:[^/]+>', handler=ViewFollowingFollowersList, name='view-follow-list'),
         webapp2.Route( r'/<user_key:[^/]+>/update-follow-status', handler=UpdateFollowStatus, name='update-follow-status'),
         webapp2.Route( r'/api-request-resources', handler=APIServices, name='api-request-resources'),

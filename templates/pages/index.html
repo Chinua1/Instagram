@@ -16,7 +16,7 @@
 {% block feeds %}
     <ul class="feeds-list">
         {% for post in posts %}
-            <li class="feed-item">
+            <li class="feed-item" id="{{post.post.key.id()}}">
                 <div class="item-block">
                     <div class="accounts-details">
                         <img src="{{profile_image}}">
@@ -35,15 +35,28 @@
                             </div>
                             <div class="comments">
                                 <div class="duration" style="font-size: 10px; color: #999;">
-                                    <strong>View all 120 comments</strong>
+                                    {% if post.post.comments|length > 0 %}
+                                        <strong>View all {{post.post.comments|length}} comments</strong>
+                                        <ul class="comment-list">
+                                        {% for comment in sortPosts(post.post.comments) %}
+                                            <li class="text-dark comment-item">
+                                                <strong>{{comment.created_by}}</strong> &nbsp;&nbsp; {{comment.text_body}}
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
                                     <div class="comment-form">
-                                        <img class="comment-profile-img" src="{{profile_image}}">
-                                        <input type="text" placeholder="Add a comment...">
+                                        <form action="/post/{{post.post.key.id()}}/add-comment" method="POST" style="position: relative;">
+                                            <img class="comment-profile-img" src="{{profile_image}}">
+                                            <input type="text" class="text-dark text-change" name="comment" placeholder="Add a comment..." maxlength="200" id="comment">
+                                            <input disabled class="text-white bg-info post-button" type="submit" value="Post" style="display: inline !important;">
+                                            <small></small>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                             <div class="duration" style="font-size: 10px; color: #999;">
-                                1 hour ago
+                                
                             </div>
                         </div>
                     </div>
