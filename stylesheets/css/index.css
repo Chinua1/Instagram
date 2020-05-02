@@ -160,6 +160,10 @@
     list-style: none;
     margin: 0;
     padding: 0;
+
+    padding-bottom: 25px;
+
+    position: relative;
 }
 
 .comment-item {
@@ -177,4 +181,36 @@
 .comment-item:last-child {
     border: none;
     margin-bottom: 10px;
+}
+
+.more-comment {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    width: 100%;
+    text-align: center;
+    color: #000;
+}
+
+.more-comment:hover {
+    color: #000;
+}
+
+.comment-body, .comment-by {
+    width: 100%;
+    display: block;
+}
+
+.comment-body {
+    min-height: 20px;
+    word-wrap: break-word;
+    color: #666;
+    line-height: 16px;
+}
+
+.comment-by {
+    height: 15px;
+    font-size: 13px;
+    text-align: end;
 }

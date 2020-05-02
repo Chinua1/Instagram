@@ -11,6 +11,7 @@ from user import User
 from post import Post
 from blob_collection import BlobCollection
 
+from view_all_comment import ViewAllCommentsOnAPostPage
 from redirect_to_timeline import RedirectToTimelinePage
 from user_profile import LoggedUserProfilePage
 from user_profile_edit import LoggedUserProfileEditPage
@@ -80,7 +81,7 @@ class TimelinePage( webapp2.RequestHandler ):
         posts = self.getTimelinePost(logged_user, collection, images, 50)
 
         if len(posts) <= 0:
-            message = "You currently do not have any posts. Create one ..."
+            message = "You currently do not have any post. Create one ..."
             query_string = "?failed=" + message
             url = "create-post" + query_string
             self.redirect( url )
@@ -167,6 +168,7 @@ class TimelinePage( webapp2.RequestHandler ):
 
 app = webapp2.WSGIApplication(
     [
+        webapp2.Route( r'/post/<post_key:[^/]+>/view-all-comments', handler=ViewAllCommentsOnAPostPage, name='view-all-comments'),
         webapp2.Route( r'/post/<post_key:[^/]+>/add-comment', handler=AddCommentToPost, name='add-comment-tro-post'),
         webapp2.Route( r'/view-list/<user_key:[^/]+>/<following_followers:[^/]+>', handler=ViewFollowingFollowersList, name='view-follow-list'),
         webapp2.Route( r'/<user_key:[^/]+>/update-follow-status', handler=UpdateFollowStatus, name='update-follow-status'),

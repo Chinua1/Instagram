@@ -1,0 +1,31 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Instagram - Search</title>
+{% endblock %}
+
+{% block header %}
+<div class="header-label">
+    <strong>Comments</strong>
+</div>
+<div class="paper-kite">
+    <a href="/timeline#{{post.key.id()}}" class="btn btn-sm btn-outlinesecondary">Back</a>
+</div>
+{% endblock %}
+
+{% block feeds %}
+    <div class="search-result-view" id="search-result-view">
+        <ul class="account-list">
+            {% for comment in comments %}
+                <li>
+                    <span class="comment-body">
+                        {{comment.text_body}}
+                    </span>
+                    <span class="comment-by">
+                        by&nbsp;<strong>{{comment.created_by}}</strong>
+                    </span>
+                </li>
+            {% endfor%}
+        </ul>
+    </div>
+{% endblock %}
