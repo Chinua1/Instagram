@@ -52,10 +52,14 @@
                 const logged_user_key = document.getElementById("logged_user_key").value;
 
                 if(document.getElementById("insta_search")) {
-                    populateSearchResultArea(document.getElementById("insta_search").value);
+                    document.getElementById("search-result-view").innerHTML = getEmptyStringResponse();
                 }
 
-                $("#insta_search").on("input", ()=>{
+                $("#insta_search").on("input", (e)=>{
+                    if (e.target.value === "") {
+                        document.getElementById("search-result-view").innerHTML = getEmptyStringResponse();
+                        return;
+                    }
                     populateSearchResultArea($("#insta_search").val());
                 });
 
@@ -75,6 +79,14 @@
                     e.target.parentNode.children[3].removeAttribute("id", "text-count-indicator");
                 });
 
+                function getEmptyStringResponse() {
+                    return  `<div class="no-account-found">
+                                <span>
+                                    <stron>Please enter a username to start searching</strong>
+                                </span>
+                            </div>`;
+                }
+
                 function populateSearchResultArea(searchString) {
                     let url = '/api-request-resources';
 
@@ -86,7 +98,6 @@
                         dataType: 'json',
                         success: function(data){
                             if ( data ) {
-                                console.log(data);
                                 if (searchString) {
                                     data = filterData( data, searchString);
                                 }
@@ -102,9 +113,11 @@
                 function filterData( data, searchString) {
                     const dataList = [];
                     for(let i=0; i<data.length; i++) {
-                        if (data[i].username.includes(searchString)) {
-                            dataList.push(data[i]);
-                        }
+                        try{
+                            if (data[i].username.includes(searchString)) {
+                                dataList.push(data[i]);
+                            }
+                        } catch(error) {}
                     }
                     return dataList;
                 }
@@ -114,7 +127,7 @@
                     if (data.length <= 0) {
                         innerContent = `<div class="no-account-found">
                             <span>
-                                <stron>No Account found</strong>
+                                <stron>No Accounts found</strong>
                             </span>
                         </div>`;
                     } else {

@@ -93,6 +93,8 @@ class UploadHandler( blobstore_handlers.BlobstoreUploadHandler ):
                         collection.blobs.append( uploads.key() )
                         collection.put()
 
+                        logged_user_key = ndb.Key( 'User', user.user_id() )
+                        logged_user = logged_user_key.get()
                         logged_user.lastname = lastname
                         logged_user.firstname = firstname
                         logged_user.username = username

@@ -19,8 +19,8 @@
             <li class="feed-item" id="{{post.post.key.id()}}">
                 <div class="item-block">
                     <div class="accounts-details">
-                        <img src="{{profile_image}}">
-                        <span><strong>{{post.created_by.username}}</strong></span>
+                      <img src="{{post.created_by.profile_image}}">
+                      <span><strong>{{post.created_by.user.username}}</strong></span>
                     </div>
                     <div class="post-image">
                         <img src="{{post.image_url}}">
@@ -31,12 +31,12 @@
                                 <!-- <strong>2 likes</strong> -->
                             </div>
                             <div class="index-post-caption text-truncate" style="font-size: 12px;">
-                                <span><strong>{{post.created_by.username}}</strong></span>&nbsp; {{post.post.post_caption}}
+                                <span><strong>{{post.created_by.user.username}}</strong></span>&nbsp; {{post.post.post_caption}}
                             </div>
                             <div class="comments">
                                 <div class="duration" style="font-size: 12px; color: #999;">
                                     {% if post.post.comments|length > 0 %}
-                                       <strong>View all {{post.post.comments|length}} comments</strong>
+                                       <strong>{{post.post.comments|length}} comments</strong>
                                         <ul class="comment-list">
                                         {% for comment in sortPosts(post.post.comments) %}
                                             {% if loop.index <= 5%}
@@ -46,7 +46,7 @@
                                             {% endif %}
                                         {% endfor %}
                                         {% if post.post.comments|length > 5 %}
-                                            <a class="more-comment" href="/post/{{post.post.key.id()}}/view-all-comments">view all comment</a>
+                                            <a class="more-comment" href="/post/{{post.post.key.id()}}/view-all-comments">view all comments</a>
                                         {% endif %}
                                         </ul>
                                     {% endif %}
@@ -54,7 +54,7 @@
                                         <form action="/post/{{post.post.key.id()}}/add-comment" method="POST" style="position: relative;">
                                             <img class="comment-profile-img" src="{{profile_image}}">
                                             <input type="text" class="text-dark text-change" name="comment" placeholder="Add a comment..." maxlength="200" id="comment">
-                                            <input disabled class="text-white bg-success post-button" type="submit" value="Post" style="display: inline !important;">
+                                            <input disabled class="text-primary bg-white post-button" type="submit" value="Post" style="display: inline !important;">
                                             <small></small>
                                         </form>
                                     </div>

@@ -118,10 +118,13 @@ class TimelinePage( webapp2.RequestHandler ):
         if len(posts) <= limit:
             limit = len(posts)
         for post in posts:
-            index = collection.filenames.index(post.image_label)
-            blob_key = collection.blobs[index]
-            images_url = images.get_serving_url(blob_key, secure_url=False)
-            created_by = self.getSelectedUser(post.created_by)
+            try:
+                index = collection.filenames.index(post.image_label)
+                blob_key = collection.blobs[index]
+                images_url = images.get_serving_url(blob_key, secure_url=False)
+            except:
+                images_url = "https://4.bp.blogspot.com/-MowVHfLkoZU/VhgIRyPbIoI/AAAAAAAATtE/qHST4Q2YCCc/s1600/placeholder-image.jpg"
+            created_by = self.getSelectedUser(post.created_by, collection, images)
             temp = {}
             temp["post"] = post
             temp["image_url"] = images_url
@@ -153,17 +156,21 @@ class TimelinePage( webapp2.RequestHandler ):
         for i in range(1, len(posts)):
             j = i-1
             nxt_element = posts[i]
-            while (posts[j].created_at < nxt_element.created_at) and (j >= 0):
-                posts[j+1] = posts[j]
-                j=j-1
-            posts[j+1] = nxt_element
+            try:
+                while (posts[j].created_at < nxt_element.created_at) and (j >= 0):
+                    posts[j+1] = posts[j]
+                    j=j-1
+                posts[j+1] = nxt_element
+            except:
+                pass
         return posts
 
-    def getSelectedUser(self, user_key):
-        user = None
+    def getSelectedUser(self, user_key, collection, images):
+        user = {}
         for user_in_datastore in User.query().fetch():
             if user_key == str(user_in_datastore.key.id()):
-                user = user_in_datastore
+                user["user"] = user_in_datastore
+                user["profile_image"] = self.getProfileImage( user_in_datastore.profile_image, collection, images )
         return user
 
 app = webapp2.WSGIApplication(
